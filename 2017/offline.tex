@@ -1,0 +1,158 @@
+\documentclass[12pt,a4paper]{jsarticle}
+
+\usepackage{bxdpx-beamer}
+\usepackage{pxjahyper}
+\usepackage{minijs} %For Japanese text 
+\renewcommand{\kanjifamilydefault}{\gtdefault} %For Japanese text
+
+\usetheme{Madrid}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{frametitle}[default][center]
+\setbeamertemplate{navigation symbols}{}
+\setbeamercovered{transparent}
+\setbeamertemplate{footline}[page number]
+\setbeamerfont{footline}{size=\normalsize,series=\bfseries}
+\setbeamercolor{footline}{fg=black,bg=black}
+
+\usepackage[utf8]{inputenc} %Character code to utf-8
+\usepackage{otf}
+\usepackage{lxfonts}
+\usepackage{bm}
+\usepackage{textcomp}
+\usepackage{fancyhdr} % feader footer
+\usepackage{lastpage}
+
+\cfoot{\thepage}
+\usepackage{listings} % sorcecode
+\usepackage{inconsolata}
+
+\title{君はゲームプログラマーになりたいか？//目指してるのは楽な道のりじゃないぜ}
+\author{くらげ～}
+\date{\today}
+
+% From here text
+\begin{doucument}
+
+\maketitle
+\section{僕は誰？宇宙人ですか？}
+　1IのJOKENの中で生きている(執筆時)くらげ～です。プログラミングは8年。セキュリティは3年。人工知能は3ヵ月。やってます。まあ、中身を詳しく言うと、きりがないので割愛しますが、何年やってきたかはどうでもいいんだよ！やる気さえあればなんでもできる！(白目)僕のモットーは広く深く、やり方は基礎を完全に理解してから、一気に深く掘り下げていきます。それで勉強の効率化を図っています。
+
+僕の場合は基礎が定着していないと応用をしないので、最初の方は成長が遅いです。小学校の時がそうやった。(試験に間に合わないんだよね、応用が...)
+
+僕は別にゲームクリエイターになるつもりは現時点ではないが、スキルを身に着ける上で学習しながらOpenGLやVulkanでオブジェクト配置したりGLSLでminecraftの影mod(現時点では影処理しか書けない)を作ったりして楽しんでいる。その他にもいろいろしているが...
+
+まあ、そんなことはどうでもいい。ゲームプログラマーというものは知っているか？
+
+
+\section{ゲームプログラマーになりたいんだよね？}
+　この世には便利な「ゲームエンジン」というものが存在する。UnityやUNREAL ENGIN4などがある。それで物理現象などを考えずにクリックで重力を起こせたり。さらにはオブジェクトを配置したりできる。これらのゲームエンジンだけでゲームを作成することができる。ただ、君はそこで満足するのか？
+
+Unityだけでとてつもなくすごいゲームを作る人もいるが。それはあくまでゲームクリエイターだゲームプログラマーではない。実際のところ最近有名になったゲーム「PLAYERUNKNOWN'S BATTLEGROUNDS」では「Unreal Engine 4」が使われているが....。まあそれはそれで、どのよう描画されているのか知らないままゲームエンジンでゲームを作成していると、ゲーム作成の基礎が分かっていないことになるよな？な？
+
+だから、ちょっとでも足を突っ込んでみてゲームエンジンの中身が分からなくても、その初歩的なことでもわかればそれでも十分だよな。(この資料に書くとページが何枚あっても足りないからかけないのは秘密)
+
+
+\section{本題に入る前に2次元/3次元グラフィックスプログラミングAPIの紹介をしよう}
+ まずは先ほど出てきたOpenGLからだ。こやつはクロノス・グループとかいうちょっとかっこいい名前をしている。そこが開発元だ。名前がかっこいいなみにやってることも侮れない。ちなみにこやつはCGAPI(コンピューターグラフィックスアプリケーションプログラミングインターフェイス)である。
+
+まあ、わけわからない言葉がたくさん出てきたが、不安がる必要はない。最初から分かる天才なんてこの世に存在しねえ。OpenGLってのはJavaみたいに対応OSが幅広いのが特徴だ。ただ、C++みたいに簡単に学習できるような言語ではない少し複雑なAPIである。つい最近までは3Dゲームの作成などはこのAPIが主流であった(今も主流かも知れない)。C++と併用するのが多い。
+
+次はDirectXというものだ。僕はこのAPIは少ししか触ったことがないので具体的にはいえないが。唯一いえることは、Windowsのみでしか動作しないことだ。Windowsだけで動作させる場合ならこの選択肢もありだろう。
+
+その次にVulkanというものだ。こいつもクロノス・グループによって、開発されている。OpenGLの上位互換といってもいいAPIだ。ただOpenGLより難しいが、低レベルなAPIによって軽量な処理が可能になっている。今後主流になっていくであろうAPIであろう。
+
+その他にもいろいろあるかもしれないが、俺は知らない。
+
+
+\section{おいおい、さっさと本題行ってくれよ}
+ まあまあ、待て待て。今回紹介するのはOpenGLとVulkanだが。同じ開発元だよな？じゃあ、何が違うんだ？
+
+\section{OpenGLとVulkanの違い}
+ 何が違うかといわれても、一見はほとんど違いはない。ただ簡単に言うと、Vulkanの方が多くのベンダーをサポートして効率的にGPUのリソースを使うことができる。何がVulkanの方が難しいか言うと、OpenGLではドライバによってメモリマネジメントや、スレッドマネジメント、コマンドバッファの生成や更新を自動でするが、Vulkanはそれをアプリケーション側でしないといけない。そこが難しい理由だ。ただ、勉強できないほど難しいものでもないので気になった人は勉強してみよう。
+ そしてVulkanで描画したものはOpenGL内で使うことができる
+
+\section{正方形を描画するぞ！}
+
+\begin{lstlisting}[language=C++]
+#include <bits/stdc++.h>
+#include <GLUT/glut.h>
+
+//the color is red
+Glfloat color[] = {1.0, 0.0, 0.0, 1.0};
+
+//light position
+Glfloat lightpos[] = {1200.0, 150.0, -500.0, 1.0};
+
+//main func
+int main(int argc, char *argv[]) {
+    glutInit(&argc, argv);                          // Initialization
+    glutInitWindowPosition(100, 100);               // Window position
+    glutInitWindowSize(300, 300);                   // Window size
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);   // Display mode & RGBA mode & doube buffer mode
+    glutCreateWindow("offline sample program");     // Program show  windowname
+    glutDisplayFunc(display);                       // Display callback
+    glutIdleFunc(idle);                             // Idle callback
+    Init();                                         // Next Func
+    glutMainLoop();                                 // Loop processing
+    return 0;
+}
+
+void display(void) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, WIDTH, HEIGHT); 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    //viewing angle
+    gluPerspective(30.0, 300.0 / 300.0, 1.0, 1000.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    //set viewpoint
+    gluLookAt(150.0, 100.0, -200.0, // Camera coordinate
+              0.0, 0.0, 0.0,        // gazing point coordinate
+              0.0, 1.0, 0.0);       // the screen, Vector pointing up 
+
+    //set light
+    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+
+    //set material
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+    glutSolidCube(40.0);
+
+    glutSwapBuffers();
+}
+
+void idle(void){
+    glutPostRedisplay();
+}
+
+void Init(){
+    glCLearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+}
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+　
+
+
+
+
+ 

@@ -1,0 +1,1 @@
+pletex offline.tex && dvipdf offline.dvi offline.pdf
