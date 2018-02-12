@@ -1,18 +1,8 @@
 \documentclass[12pt,a4paper]{jsarticle}
 
-\usepackage{bxdpx-beamer}
 \usepackage{pxjahyper}
 \usepackage{minijs} %For Japanese text 
 \renewcommand{\kanjifamilydefault}{\gtdefault} %For Japanese text
-
-\usetheme{Madrid}
-\usefonttheme{professionalfonts}
-\setbeamertemplate{frametitle}[default][center]
-\setbeamertemplate{navigation symbols}{}
-\setbeamercovered{transparent}
-\setbeamertemplate{footline}[page number]
-\setbeamerfont{footline}{size=\normalsize,series=\bfseries}
-\setbeamercolor{footline}{fg=black,bg=black}
 
 \usepackage[utf8]{inputenc} %Character code to utf-8
 \usepackage{otf}
@@ -31,7 +21,7 @@
 \date{\today}
 
 % From here text
-\begin{doucument}
+\begin{document}
 
 \maketitle
 \section{僕は誰？宇宙人ですか？}
@@ -71,7 +61,7 @@ Unityだけでとてつもなくすごいゲームを作る人もいるが。そ
  何が違うかといわれても、一見はほとんど違いはない。ただ簡単に言うと、Vulkanの方が多くのベンダーをサポートして効率的にGPUのリソースを使うことができる。何がVulkanの方が難しいか言うと、OpenGLではドライバによってメモリマネジメントや、スレッドマネジメント、コマンドバッファの生成や更新を自動でするが、Vulkanはそれをアプリケーション側でしないといけない。そこが難しい理由だ。ただ、勉強できないほど難しいものでもないので気になった人は勉強してみよう。
  そしてVulkanで描画したものはOpenGL内で使うことができる
 
-\section{立方体を描画するぞ！}
+\section{正方形を描画するぞ！}
 
 \begin{lstlisting}[language=C++]
 #include <bits/stdc++.h>
@@ -134,6 +124,8 @@ void Init(){
     glEnable(GL_LIGHT0);
 }
 \end{lstlisting}
+
+\end{document}
 
 
 
