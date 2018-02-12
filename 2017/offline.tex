@@ -12,10 +12,10 @@
 \usepackage{listings} % sorcecode
 \usepackage{inconsolata}
 
-\renewcommand{\lstlistingname}{リスト}
+\renewcommand{\thelstnumber}{\arabic{lstnumber}:}
 \lstset{language=C++,
   breaklines=true
-  basicstyle=\ttfamily\scriptsize,
+  basicstyle=\sffamily,
   commentstyle=\textit,
   classoffset=1,
   keywordstyle=\bfseries,
@@ -77,28 +77,19 @@ Unityだけでとてつもなくすごいゲームを作る人もいるが。そ
 #include <GLUT/glut.h>
 
 //the color is red
-Glfloat color[] = {1.0, 0.0, 0.0, 1.0};
+GLfloat color[] = {1.0, 0.0, 0.0, 1.0};
 
 //light position
-Glfloat lightpos[] = {1200.0, 150.0, -500.0, 1.0};
+GLfloat lightpos[] = {1200.0, 150.0, -500.0, 1.0};
 
 //main func
-int main(int argc, char *argv[]) {
-    glutInit(&argc, argv);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(300, 300);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-    glutCreateWindow("offline sample program");
-    glutDisplayFunc(display);
-    glutIdleFunc(idle);
-    Init();
-    glutMainLoop();
-    return 0;
+void idle(void){
+    glutPostRedisplay();
 }
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, WIDTH, HEIGHT); 
+    glViewport(0, 0, 320, 240); 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -116,21 +107,30 @@ void display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 
     //set material
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
     glutSolidCube(40.0);
 
     glutSwapBuffers();
 }
 
-void idle(void){
-    glutPostRedisplay();
-}
-
 void Init(){
-    glCLearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+}
+
+int main(int argc, char *argv[]) {
+    glutInit(&argc, argv);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(300, 300);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+    glutCreateWindow("offline sample program");
+    glutDisplayFunc(display);
+    glutIdleFunc(idle);
+    Init();
+    glutMainLoop();
+    return 0;
 }
 \end{lstlisting}
 
