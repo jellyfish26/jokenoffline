@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 #include <GLUT/glut.h>
-#define GLUT_DISABLE_ATEXIT_HACK
 
 //the color is red
 GLfloat color[] = {1.0, 0.0, 0.0, 1.0};
