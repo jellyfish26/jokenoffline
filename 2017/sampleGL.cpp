@@ -1,29 +1,21 @@
 #include <bits/stdc++.h>
 #include <GLUT/glut.h>
+#define GLUT_DISABLE_ATEXIT_HACK
 
 //the color is red
-Glfloat color[] = {1.0, 0.0, 0.0, 1.0};
+GLfloat color[] = {1.0, 0.0, 0.0, 1.0};
 
 //light position
-Glfloat lightpos[] = {1200.0, 150.0, -500.0, 1.0};
+GLfloat lightpos[] = {1200.0, 150.0, -500.0, 1.0};
 
 //main func
-int main(int argc, char *argv[]) {
-    glutInit(&argc, argv);                          // Initialization
-    glutInitWindowPosition(100, 100);               // Window position
-    glutInitWindowSize(300, 300);                   // Window size
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);   // Display mode & RGBA mode & doube buffer mode
-    glutCreateWindow("offline sample program");     // Program show  windowname
-    glutDisplayFunc(display);                       // Display callback
-    glutIdleFunc(idle);                             // Idle callback
-    Init();                                         // Next Func
-    glutMainLoop();                                 // Loop processing
-    return 0;
+void idle(void){
+    glutPostRedisplay();
 }
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, WIDTH, HEIGHT); 
+    glViewport(0, 0, 320, 240); 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -41,19 +33,28 @@ void display(void) {
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 
     //set material
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
     glutSolidCube(40.0);
 
     glutSwapBuffers();
 }
 
-void idle(void){
-    glutPostRedisplay();
-}
-
 void Init(){
-    glCLearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+}
+
+int main(int argc, char *argv[]) {
+    glutInit(&argc, argv);                          // Initialization
+    glutInitWindowPosition(100, 100);               // Window position
+    glutInitWindowSize(300, 300);                   // Window size
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);   // Display mode & RGBA mode & doube buffer mode
+    glutCreateWindow("offline sample program");     // Program show  windowname
+    glutDisplayFunc(display);                       // Display callback
+    glutIdleFunc(idle);                             // Idle callback
+    Init();                                         // Next Func
+    glutMainLoop();                                 // Loop processing
+    return 0;
 }
