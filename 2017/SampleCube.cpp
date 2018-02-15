@@ -96,10 +96,10 @@ int main()
 		glLoadIdentity();
 
 
-		int now_width, now_height; //now_height isn't use
+		int now_width, now_height;
 		glfwGetFramebufferSize(window, &now_width, &now_height);
-		glViewport(0, 0, now_width, now_width * 0.75);
-		gluPerspective(30.0, (double)width / (double)height, 1.0, 100.0);
+		glViewport(0, 0, now_width, now_height);
+		gluPerspective(30.0, (double)now_width / (double)now_height, 1.0, 100.0);
 		glTranslated(0.0, 0.0, -2.0);
 		gluLookAt(3.0, 5.0, 4.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 		glLightfv(GL_LIGHT0, GL_POSITION, Lightpos0);
