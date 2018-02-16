@@ -143,7 +143,13 @@ int main()
 		return 1;
 	}
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
 	window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
+
+
 
 	if (window == NULL)
 	{
@@ -194,7 +200,7 @@ int main()
 
 この上記のコードはOpenGLにおける立方体の描画プログラムだ。早速見ていこう！
 
-まず\verb|#|defineだ\verb|#|defineはC言語をベースとするプリプロセッサ命令で、マクロ処理を担っている。ちなみに\verb|#|define　GLFW\verb|_|INCLUDE\verb|_|GLUはGLFW3.0以降にデフォルトでGLUヘッダーが含まれなくなったので、インクルードしています。
+まず\verb|#|defineだ\verb|#|defineはC言語をベースとするプリプロセッサ命令で、マクロ処理を担っている。ちなみに\verb|#|define GLFW\verb|_|INCLUDE\verb|_|GLUはGLFW3.0以降にデフォルトでGLUヘッダーが含まれなくなったので、インクルードしています。
 \verb|#|includeは\verb|#|defineと一緒でC言語をベースとするプリプロセッサ命令で。簡単に言うと別のソースファイルをまとめて処理してくれる。
 \verb|#|include\verb|<|GLFW/glfw3.h\verb|>|が今回使うGLFWのソースファイルだ。これがないとGLFWを使うことができない。
 
