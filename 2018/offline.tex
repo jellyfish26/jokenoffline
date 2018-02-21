@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper,titlepage]{jsarticle}
+\documentclass[a4paper,titlepage]{jsarticle}
 
 \usepackage{pxjahyper}
 \renewcommand{\kanjifamilydefault}{\gtdefault} %For Japanese text
@@ -14,15 +14,12 @@
 
 \renewcommand{\thelstnumber}{\arabic{lstnumber}:}
 \lstset{language=C++,
-  breaklines=true
-  basicstyle=\sffamily,
-  commentstyle=\textit,
-  classoffset=1,
-  keywordstyle=\bfseries,
-  frame=tRBl,
-  framesep=5pt,
-  showstringspaces=false,
-  tabsize=1
+  breaklines = true
+  basicstyle = {10pt},
+  basicstyle = \ttfamily,
+  commentstyle = {\textit},
+  keywordstyle = \bfseries,
+  frame = tRBl,
 }
 
 \title{君はゲームプログラマーになりたいか？ \\ 目指してるのは楽な道のりじゃないぜ}
@@ -48,8 +45,6 @@
 \section{え？ゲームプログラマー？え、めっちゃかっこええやん}
 この世には Unity や UNREAL ENGINE 4 など様々なゲームエンジンがあって、そ れで物理現象などを考えずにクリックで重力を起こせたり, さらにはオブジェクトを配置 したりできる。これらのゲームエンジンだけでゲームを作成することができる。ただ、君 はそこで満足するのか？ん？そこで満足していいと思ってるのか？
 
-\clearpage
-
 \subsection{基礎を知らないままゲームを作るのか？}
 ゲームを作成するだけなら Unity や UNREAL ENGINE 4 の勉強をすればいい。で も、それはゲームクリエイターであってゲームプログラマーではない。ただ、これらの ゲームエンジンを使ってはいけないとは誰も言っていない。ゲームを作成するうえで時間 短縮、楽することは重要なことである。俺はゲームエンジンを使うことは推奨する人だ。 だが、どのように描画されているのか知らないままゲームエンジンでゲームを作成してい ると、ゲーム作成の基礎が分かっていないことになるよな？な？だから、ちょっとでも足 を突っ込んでみて、ゲームエンジンの中身までわからなくても、その初歩的なことでもわ かればそれでも十分だよな！ (この資料に全部書くとページが何枚あっても足りないのは 秘密)
 
@@ -65,26 +60,45 @@
 その他にもいろいろあるかもしれないが、俺は知らない。
 
 \section{おい、さっさと本題いってくれよ}
-まあまあ、待て待て。今回紹介するのはOpenGLとVulkanだが。同じ開発元だよな？じゃあ、何が違うんだ？
+まあまあ、待て待て。今回紹介するのはOpenGLだが。同じ開発元だよな？じゃあ、何が違うんだ？
 
  A:同じ開発元だからなんだって言いたいんだ。
  
  me:いや... 別に何もないです....
  
 \section{OpenGL と Vulkan の違いってなんだよ？}
-何が違うかといわれても一見はほとんど違いはない。ただ簡単に言うとVulkanの方が多くのベンダーをサポートして効率的にGPUのリソースを使うことができる。何がVulkanの方が難しいか言うと、OpenGLではドライバによってメモリマネジメントや、スレッドマネジメント、コマンドバッファの生成や更新を自動でするが、Vulkanはそれをアプリケーション側でしないといけない。そこが難しい理由だ。ただ、勉強できないほど難しいものでもないので気になった人は勉強してみよう。そしてVulkanで描画したものはOpenGL内で使うことができるぞ！とても便利なのでVulkanも一緒に勉強しちゃおう！
+何が違うかといわれても一見はほとんど違いはない。ただ簡単に言うとVulkanの方が多くのベンダーをサポートして効率的にGPUのリソースを使うことができる。何がVulkanの方が難しいか言うと、OpenGLではドライバによってメモリマネジメントや、スレッドマネジメント、コマンドバッファの生成や更新を自動でするが、Vulkanはそれをアプリケーション側でしないといけない。そこが難しい理由だ。ただ、勉強できないほど難しいものでもないので気になった人は勉強してみよう。そしてVulkanで描画したものはOpenGL内で使うことができるぞ！ただ、今回は紙媒体ということもあり、Vulkanのソースコードは長いので、資料に書くことができません！皆さんも読む気なくしますよね？
+
+\newpage
 
 \section{OpenGL}
-まずは、OpenGLで立方体を描画したいのだが、そもそもOpenGLってなんなの？？
+まずはOpenGLで立方体を描画したいのだが、そもそもOpenGLってなんなの？？
+
+\subsection{OpenGLとは}
+OpenGLとは,先ほど出たようにクロノス・グループ(khronos Group)が策定、開発していて、2/3次元CGAPIである。
 
 \subsection{OpenGLとは何者だ！}
-ここ最近、ゲームなどで3Dゲームなどが増えてきました。これは三次元コンピュータグラフィックス(3DComputerGraphics、3DCG)の技術を使っています。virtual youtuberなどは3DCGなどを使って、キャラクターの外観を作成し、Kinectなどでモーションキャプチャーを行って、キャラクターを動かしたりしています。いま一番身近にある技術なのではないのかなと思っています。
+ここ最近、ゲームなどで3Dゲームなどが増えてきました。これは三次元コンピュータグラフィックス(3DComputerGraphics、3DCG)の技術を使っています。"Virtual Youtuber"などは3DCGなどを使って、キャラクターの外観を作成し、webカメラや今は生産終了されているKinectなどでモーションキャプチャーを行って、キャラクターを動かしたりしています。いま一番身近にある技術なのではないのかなと思っています。
+ただ、"Virtual Youtuber"や3Dゲームが生まれる前からも、OpenGLは広く使われていました。一つの大きな要因としてOpenGLはプラットフォームに依存しないからです。プラットフォームに依存しないことによりLinuxのX Window Systemに組み込まれていたり、WindowsとmacOSともにOpenGLが導入されていて、さらにiOSやAndroidにも組込みシステム向けのOpenGL ESなどが導入されています。Nintendo SwitchもVulkanやOpenGLがサポートされています。
 
-OpenGLは「プラットフォームに依存しないCGAPI(コンピュータグラフィックAPI)」であるが、
+\subsection{OpenGLを動かすためには}
+OpenGLは「プラットフォームに依存しないCGAPI(コンピュータグラフィックAPI)」であるが、やはりプラットフォームごとに少し工夫する必要があります。また、この工夫はちょっとめんどくさいのでそれを気にしなくて簡単に使うことができるキットがこの世には存在する。
+
+\subsection{GLUT}
+GLUTとは先ほどのキットの一種である。OpenGLの初期のころに作られたもので、僕も最初はこれを使って勉強していた。しかし、このGLUTには欠点があり、長期間メンテナンスされていないし、macOS ver10.9からはGLUTの使用が非推奨となっています。このキットはUnix系OSで使うことができるぞ！
+
+\subsection{GLFW}
+GLUTに代わるものしてQt(キュート)などたくさんありますが、やはり手軽に学習できるという点でGLFWをお勧めします。
+GLFWはクロスプラットフォーム(マルチプラットフォーム)で、C言語で書かれているが、他の言語で使用することができるバインディングがある。
+GLFWにはOpenGLのバージョンやプロファイルが指定できたりマルチモニタに対応していたり、いろいろ機能があるが説明しているときりがないので今回は省く。
+さらに、このofflineではGLFWで描画するぜ！ちなみにゲームをOepnGLとC言語系で作るときはSDLの方が多機能でゲームプログラマー御用達なので、そっちを使うことをお勧めする。\newpage
 
 \subsection{立方体を描画するぞ！}
+OpenGLを使って図形を表示するソースコードを見たりプログラムを書いたりするにあたって、幾何学の存在は逃せません。とくに三次元空間のオブジェクトを扱うには、幾何学の知識が必要になります。
 
-\begin{lstlisting}[language=C++]
+まずはソースコードを見てみよう！
+
+\begin{lstlisting}[language=C++,numbers = left]
 #define GLFW_INCLUDE_GLU
 #include <iostream>
 #include <GLFW/glfw3.h>
@@ -160,11 +174,9 @@ int main()
 
 	window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
 
-
-
 	if (window == NULL)
 	{
-		std::cerr << "Error create GLFW window." << std::endl;
+		std::cerr << "Error　create　GLFW　window." << std::endl;
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 		return 1;
@@ -205,13 +217,44 @@ int main()
 	}
 
 	glfwTerminate();
-	return EXIT_SUCCESS;
+	return 0;
 }
 \end{lstlisting}
 
-この上記のコードはOpenGLにおける立方体の描画プログラムだ。早速見ていこう！
+この上記のコードはOpenGL(GLFW)における立方体の描画プログラムだ。早速見ていこう！
 
 まず\verb|#|defineだ\verb|#|defineはC言語をベースとするプリプロセッサ命令で、マクロ処理を担っている。ちなみに\verb|#|define GLFW\verb|_|INCLUDE\verb|_|GLUはGLFW3.0以降にデフォルトでGLUヘッダーが含まれなくなったので、インクルードしています。
 \verb|#|includeは\verb|#|defineと一緒でC言語をベースとするプリプロセッサ命令で。簡単に言うと別のソースファイルをまとめて処理してくれる。
 \verb|#|include\verb|<|GLFW/glfw3.h\verb|>|が今回使うGLFWのソースファイルだ。これがないとGLFWを使うことができない。
+\verb|#|define width 1280は横幅 \verb|#|define height 960は高さをマクロしている。ここでは初期のwindow sizeとして扱っている。
+
+\subsection{ポリゴンの表示}
+
+さあここから本場所に入っていく！C++ではint main(引数)※引数がvoidは省略可;がプログラム実行時に一番最初に呼び出される関数です。まず最初にすべきことはGLFWを初期化しないといけません。GLFWを初期化するのは以下のコードで初期化することができます
+
+\begin{lstlisting}[language=C++]
+if( !glfwInit() ) return 1;
+\end{lstlisting}
+僕のソースコードでは
+\begin{lstlisting}[language=C++]
+if (glfwInit() == GL_FALSE)
+	{
+		std::cerr << "Error initilize GLFW" << std::endl;
+		exit(EXIT_FAILURE);
+		return 1;
+	}
+\end{lstlisting}
+このようになっていますが、あまり変わりはありません。!と== falseは同じ意味で、またfalseとGL\verb|_|FALSEもそこまで意味合い的にはそこまで違いはありません。また、
+\begin{lstlisting}[language=C++]
+std::cerr << "Error initilize GLFW" << std::endl;
+\end{lstlisting}
+と書いているのは、標準エラー出力を出した方がエラー内容が分かりやすいので、デバッグ時などに有用です。初期化に失敗した場合は
+\begin{lstlisting}[language=bash]
+Error initilize GLFW
+\end{lstlisting}
+と表示させ、初期化に失敗したとを知らせます。さらに、
+\begin{lstlisting}[language=C++]
+exit(EXIT_FAILURE);
+\end{lstlisting}
+
 \end{document}
