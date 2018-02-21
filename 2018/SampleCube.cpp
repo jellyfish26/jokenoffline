@@ -118,5 +118,5 @@ int main()
 	}
 
 	glfwTerminate();
-	return EXIT_SUCCESS;
+	return 0;
 }
