@@ -35,10 +35,10 @@ static const GLdouble CubeNormal[][3] = {
 	{ 0.0, 1.0, 0.0 }
 };
 
-static const GLfloat CubeMaterial[] = { 0.8, 0.35, 0.4, 1.0 };
-static const GLfloat LightColor[] = { 0.2, 0.2, 0.8, 1.0 };
-static const GLfloat Lightpos0[] = { 0.0, 3.0, 5.0, 1.0 };
-static const GLfloat Lightpos1[] = { 5.0, 3.0, 0.0, 1.0 };
+static const GLfloat CubeMaterial[] = { 0.8f, 0.35f, 0.4f, 1.0f };
+static const GLfloat LightColor[] = { 0.2f, 0.2f, 0.8f, 1.0f };
+static const GLfloat Lightpos0[] = { 0.0f, 3.0f, 5.0f, 1.0f };
+static const GLfloat Lightpos1[] = { 5.0f, 3.0f, 0.0f, 1.0f };
 
 
 static void DrawCube()
@@ -67,13 +67,11 @@ int main()
 		return 1;
 	}
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
-
-
 
 	if (window == NULL)
 	{

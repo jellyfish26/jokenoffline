@@ -30,9 +30,6 @@
 \begin{document}
 \maketitle
 
-\tableofcontents
-\clearpage
-
 \section{君の名は？}
 この上の君というの著作者だから心配する必要はない！
 
@@ -136,10 +133,10 @@ static const GLdouble CubeNormal[][3] = {
 	{ 0.0, 1.0, 0.0 }
 };
 
-static const GLfloat CubeMaterial[] = { 0.8, 0.35, 0.4, 1.0 };
-static const GLfloat LightColor[] = { 0.2, 0.2, 0.8, 1.0 };
-static const GLfloat Lightpos0[] = { 0.0, 3.0, 5.0, 1.0 };
-static const GLfloat Lightpos1[] = { 5.0, 3.0, 0.0, 1.0 };
+static const GLfloat CubeMaterial[] = { 0.8f, 0.35f, 0.4f, 1.0f };
+static const GLfloat LightColor[] = { 0.2f, 0.2f, 0.8f, 1.0f };
+static const GLfloat Lightpos0[] = { 0.0f, 3.0f, 5.0f, 1.0f };
+static const GLfloat Lightpos1[] = { 5.0f, 3.0f, 0.0f, 1.0f };
 
 
 static void DrawCube()
@@ -163,13 +160,13 @@ int main()
 
 	if (glfwInit() == GL_FALSE)
 	{
-		std::cerr << "Error initilize GLFW" << std::endl;
-		exit(EXIT_FAILURE);
-		return 1;
+	std::cerr << "Error initilize GLFW" << std::endl;
+	exit(EXIT_FAILURE);
+	return 1;
 	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
@@ -238,13 +235,13 @@ if( !glfwInit() ) return 1;
 僕のソースコードでは
 \begin{lstlisting}[language=C++]
 if (glfwInit() == GL_FALSE)
-	{
-		std::cerr << "Error initilize GLFW" << std::endl;
-		exit(EXIT_FAILURE);
-		return 1;
-	}
+{
+	std::cerr << "Error initilize GLFW" << std::endl;
+	exit(EXIT_FAILURE);
+	return 1;
+}
 \end{lstlisting}
-このようになっていますが、あまり変わりはありません。!と== falseは同じ意味で、またfalseとGL\verb|_|FALSEもそこまで意味合い的にはそこまで違いはありません。また、
+このようになっていますが、あまり変わりはありません。!と== falseは同じ意味で、またfalseとGL\verb|_|FALSEも意味合い的にはそこまで違いはありません。また、
 \begin{lstlisting}[language=C++]
 std::cerr << "Error initilize GLFW" << std::endl;
 \end{lstlisting}
@@ -252,9 +249,69 @@ std::cerr << "Error initilize GLFW" << std::endl;
 \begin{lstlisting}[language=bash]
 Error initilize GLFW
 \end{lstlisting}
-と表示させ、初期化に失敗したとを知らせます。さらに、
+と表示させ、初期化に失敗したとを知らせます。
 \begin{lstlisting}[language=C++]
-exit(EXIT_FAILURE);
+return 1;
 \end{lstlisting}
+で1を返して、プログラムが異常終了をします。ちなみに余談なんですが、
+\begin{lstlisting}[caption = sample.cpp,language = C++]
+int main()
+{
+	return 0;
+}
+\end{lstlisting}
+というソースコードがあって以下のコマンドを実行します\\Linux系のOSの場合は
+\begin{lstlisting}[language=bash]
+$ g++ sample.cpp
+$ ./a.out && echo "SUCCESS"
+\end{lstlisting}
+Windowsの場合は
+\begin{lstlisting}[language=bash]
+$ g++ sample.cpp
+$ ./a.exe && echo "SUCCESS"
+\end{lstlisting}
+そうすると出力はどうなるでしょうか？
+では、次に下記のソースコードで同じコマンドを実行してみましょう。
+\begin{lstlisting}[caption = sample.cpp,language = C++]
+int main()
+{
+	return 1;
+}
+\end{lstlisting}
+さて、どうなるでしょうか。一つ目のプログラムでコマンドを実行した場合、出力は
+\begin{lstlisting}[language=bash]
+SUCCESS
+\end{lstlisting}
+となりますが、2つ目プログラムでコマンドを実行した場合、出力はありません。
+....で、何が言いたいの？まあ、returnの有用性を知ってもらいたかっただけです。
+まあ、C++を普通に勉強するならいらない知識かもしれない。
+\begin{lstlisting}[language=C++]
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+\end{lstlisting}
+この3つは別に必要はないですが、window作成時に、コンテキストやスワップチェインなどの情報を指定します。
+各環境によって動作するOpenGLのバージョンが変わってくる可能性があるので、
+\begin{lstlisting}[language=C++]
+glfwDefaultWindowHint();
+\end{lstlisting}
+を書くといいでしょう、これはデフォルトの情報を指定してくれます。
+\begin{lstlisting}[language=C++]
+window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
+\end{lstlisting}
+ではwindowを作成する上で情報を指定します。
+データ型としては
+\begin{lstlisting}[language=C++]
+glfwCreateWindow(int, int,const char, GLFWmonitor , GLFWwindow );
+\end{lstlisting}
+で構成されていて、第1引数は横幅、第2引数は高さ、第3引数は表示させるタイトル、第4引数は表示させるモニター、第5引数はリソースを共有するコンテキストです。ちなみにフルスクリーンにする方法は2つほどあって\\モニタの横幅と高さを引数にする方法
+\begin{lstlisting}[language=C++]
+int width, height;
+GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+glfwGetMonitorPhysicalSize(monitor, width, height);
+window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
+//マクロは外してください
+\end{lstlisting}
+glfwGetPrimaryMonitor()で１枚目のモニターを取得して、glfwGetMonitorPhysicalSize()でモニタの物理サイズを取得します。
 
 \end{document}
