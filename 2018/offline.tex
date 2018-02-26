@@ -134,9 +134,7 @@ static const GLdouble CubeNormal[][3] = {
 };
 
 static const GLfloat CubeMaterial[] = { 0.8f, 0.35f, 0.4f, 1.0f };
-static const GLfloat LightColor[] = { 0.2f, 0.2f, 0.8f, 1.0f };
 static const GLfloat Lightpos0[] = { 0.0f, 3.0f, 5.0f, 1.0f };
-static const GLfloat Lightpos1[] = { 5.0f, 3.0f, 0.0f, 1.0f };
 
 
 static void DrawCube()
@@ -183,11 +181,8 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, LightColor);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightColor);
 	// #82ffe6 is HTML color
 	glClearColor(0.509f, 1.0f, 0.901f, 1.0f);
 
@@ -205,7 +200,6 @@ int main()
 		glTranslated(0.0, 0.0, -2.0);
 		gluLookAt(3.0, 5.0, 4.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 		glLightfv(GL_LIGHT0, GL_POSITION, Lightpos0);
-		glLightfv(GL_LIGHT1, GL_POSITION, Lightpos1);
 
 		DrawCube();
 
@@ -253,7 +247,9 @@ Error initilize GLFW
 \begin{lstlisting}[language=C++]
 return 1;
 \end{lstlisting}
-で1を返して、プログラムが異常終了をします。ちなみに余談なんですが、
+で1を返して、プログラムが異常終了をします。\\
+ちなみに余談なんですが
+\newpage
 \begin{lstlisting}[caption = sample.cpp,language = C++]
 int main()
 {
@@ -304,14 +300,161 @@ window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
 \begin{lstlisting}[language=C++]
 glfwCreateWindow(int, int,const char, GLFWmonitor , GLFWwindow );
 \end{lstlisting}
-で構成されていて、第1引数は横幅、第2引数は高さ、第3引数は表示させるタイトル、第4引数は表示させるモニター、第5引数はリソースを共有するコンテキストです。ちなみにフルスクリーンにする方法は2つほどあって\\モニタの横幅と高さを引数にする方法
+で構成されていて、第1引数は横幅、第2引数は高さ、第3引数は表示させるタイトル、第4引数は表示させるモニター、第5引数はリソースを共有するコンテキストです。また、GLFWwindow型のポインタを返します。ちなみにフルスクリーンにする方法があって、
 \begin{lstlisting}[language=C++]
-int width, height;
-GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-glfwGetMonitorPhysicalSize(monitor, width, height);
-window = glfwCreateWindow(width, height, "SampleCube", NULL, NULL);
-//マクロは外してください
+glfwCreateWindow(width, height, glfwGetPrimaryMonitor(), NULL );
 \end{lstlisting}
-glfwGetPrimaryMonitor()で１枚目のモニターを取得して、glfwGetMonitorPhysicalSize()でモニタの物理サイズを取得します。
+glfwGetPrimaryMonitor()で１枚目のモニターを取得して、第4引数に渡しています。また、2枚目や3枚目のモニターをフルスクリーンにしたい場合は
+\begin{lstlisting}[language=C++]
+glfwCreateWindow(width, height, glfwGetMonitors(2), NULL );
+\end{lstlisting}
+で、フルスクリーンにさせることができます。
+これもGLFWの初期化同様に、windowの生成に失敗したら1を返す必要があります。
+僕のソースコードでは
+\begin{lstlisting}[language=C++]
+if (window == NULL)
+{
+	std::cerr << "Error create GLFW window." << std::endl;
+	glfwTerminate();
+	exit(EXIT_FAILURE);
+	return 1;
+}
+\end{lstlisting}
+となっていますが
+\begin{lstlisting}[language=C++]
+if (!window)
+{
+	glfwTerminate();
+	return 1;
+}
+\end{lstlisting}
+でOKです。なぜglfwTerminate();が必要なのかというと、glfwInit関数を呼び出した後は必ず呼び出す必要があるからです。
+そして、glfwMakeContextCurrentを使ってカレントにします。
+\begin{lstlisting}[language=C++]
+glfwMakeContextCurrent(window);
+\end{lstlisting}
+OpenGLのAPIを使う前には、必ずOpenGLコンテキストを取得しなければならないのでこのコードは必須です。
+他のコンテキストをカレントするか、もしくはウィンドウが破棄(主に終了動作)されるまで、カレントコンテキストはこの状態を維持し続けます。\\
+OpenGLのAPIを使えるようになったので、まずはOpenGLを初期化していきます。
+まずはデプスバッファの有効化です。
+\begin{lstlisting}[language=C++]
+glEnable(GL_DEPTH_TEST);
+\end{lstlisting}
+で有効化できるのですが....デプスバッファって何？
+
+デプスバッファとはZバッファとも呼ばれますが、深度情報を用いて物体の描画処理を省略して高速化するための技術です。
+3DCGでは、平面に描画するためには空間内に配置された物体の頂点や境界線、表面のうち見えている部分だけを描画しなければなりません。手間にある他の物体などに隠されて見えてない部分の描画を省略する必要があるから有効にしています。今回は1つの物体しか描画していませんが、2つ3つ描画するときに必要なものです。
+
+その次に、ライティング処理を有効化します。
+\begin{lstlisting}[language=C++]
+glEnable(GL_LIGHTING);
+\end{lstlisting}
+これで頂点カラーに証明パラメーターを使用するようになりました。そして光源を有効化します。
+\begin{lstlisting}[language=C++]
+glEnable(GL_LIGHT0);
+\end{lstlisting}
+でライト0が有効化されました。
+\begin{lstlisting}[language=C++]
+glEnable(GL_CULL_FACE)
+\end{lstlisting}
+描画処理を軽量化します。これではポリゴンの片面表示を有効化しています\\
+表面だけ描きたいのなら
+\begin{lstlisting}[language=C++]
+glCullFace(GL_BACK);
+\end{lstlisting}
+裏面だけを描きたいのなら
+\begin{lstlisting}[language=C++]
+glCullFace(GL_FRONT);
+\end{lstlisting}
+両面を描くときは、
+\begin{lstlisting}[language=C++]
+glDisable(GL_CULL_FACE);
+\end{lstlisting}
+を一応書いた方がいいでしょう。
+そして、glClearColor()でglViewPortで指定した範囲を塗りつぶします。
+ちなみにglClearColorはRGBAで指定できるのですが、少し気を付けなければならない点があります。
+256段階の数字を扱うのではなく係数で扱います。すなわち、1.0が255で0.0が0となります。なので\verb|#|82ffe6はrbga(130,255,230,1.0)になって係数にするには、$ y = \frac{x}{255} $に当てはめて計算します。すると
+\begin{lstlisting}[language=C++]
+glClearColor(0.509f, 1.0f, 0.901f, 1.0f);
+\end{lstlisting}
+こう書けます！！
+GLFWでは描画する際にwhileでループを書かなければなりません。
+\begin{lstlisting}[language=C++]
+while(!glfwWindowShouldClose())
+\end{lstlisting}
+でできます。
+glClear()を用いれば、バッファを初期化できます。
+\begin{lstlisting}[language=C++]
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+\end{lstlisting}
+GL\verb|_|COLOR\verb|_|BUFFER\verb|_|BITは色バッファの初期化、GL\verb|_|DEPTH\verb|_|BUFFER\verb|_|BITはデプスバッファ(Zバッファ)を初期化します。
+\begin{lstlisting}[language=C++]
+glLoadIdentity();
+\end{lstlisting}
+をコールして変換行列を単位行列で初期化します。これで描画毎に座標系をリセットしています。
+\begin{lstlisting}[language=C++]
+int now_width, now_height;
+glfwGetFramebufferSize(window, &now_width, &now_height);
+\end{lstlisting}
+now\verb|_|widthとnow\verb|_|heightのint型を宣言して、glfwGetFramebufferSize()でフレームバッファサイズを取得します。そして、
+\begin{lstlisting}[language=C++]
+glViewport(0, 0, now_width, now_height);
+\end{lstlisting}
+でglClearColorで設定された色をglViewportの範囲を塗りつぶします。
+\begin{lstlisting}[language=C++]
+gluPerspective(30.0, (double)now_width / (double)now_height, 1.0, 100.0);
+\end{lstlisting}
+gluPerspective()では視野角、奥行きの最大、最小距離を描画します。この範囲外は例外を除いて基本的には描画されません。
+第1引数には縦の視野角(度数指定)、第2引数には縦に対する横方向の視野角、第3引数には一番近いZ座標を指定して、第4引数には一番遠いZ座標を指定します
+\begin{lstlisting}[language=C++]
+glTranslated(0.0, 0.0, -2.0);
+\end{lstlisting}
+glTranslated()ではx,y,zに移動量を渡すと、平行移動します。
+この場合z軸方向に-2.0平行移動します。
+そして、カメラの位置と姿勢を設定します
+\begin{lstlisting}[language=C++]
+gluLookAt(3.0, 5.0, 4.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+\end{lstlisting}
+左に引数から順にカメラのX座標,Y座標,Z座標,注視点のX座標,注視点のY座標,注視点のZ座標、カメラの上方向がX軸に対してどこか,カメラの上方向がY軸に対してどこか,カメラの上方向がZ軸に対してどこかを指定します。第7,8,9引数はベクトルを指定します。
+\begin{lstlisting}[language=C++]
+glLightfv(GL_LIGHT0, GL_POSITION, Lightpos0);
+\end{lstlisting}
+第2引数でGL\verb|_|POSITIONが定数とされているので、光源を設置します。Lightpos0の座標に設置します、その後にDrawCube()を呼び出します。
+
+\subsection{DrawCube()}
+まずはオブジェクトの質を設定します
+\begin{lstlisting}[language=C++]
+glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, CubeMaterial);
+\end{lstlisting}
+第1引数には質感を適用する面を指定します。(GL\verb|_|FRONT\verb|_|AND\verb|_|BACKは両面を指定しています。そして第2引数では反射光を指定します、GL\verb|_|AMBIENT\verb|_|AND\verb|_|DIFFUSEになっているので、拡散反射係数と鏡面反射係数の両方を保持しています。
+次に描く処理を書きます。glBegin()から始まってglEnd()の間を処理します。
+その次にglNormal3dv()で法線ベクトルの設定を行います。オブジェクトが都のように光が反射するかどうかはこれによって決まります。
+最後にglVertex3dv()で配列のポインタを与えて頂点を指定します。
+
+\begin{lstlisting}[language=C++]
+glfwSwapBuffers(window);
+glfwPollEvents();
+\end{lstlisting}
+そしてglfwSwapBuffers()とglfwPollEvents()で描画用バッファをスワップします。
+
+\subsection{GLFWの終了}
+glfwWindowShouldClose(window)がTRUEになるとループが終わるため、GLFWの終了処理が必要です。
+\begin{lstlisting}[language=C++]
+glfwTerminate();
+return 0;
+\end{lstlisting}
+glfwTerminateはプログラムの最後に呼び出さないといけないおまじないです。そしてreturn 0;でプログラムが正常終了したことを伝えます。
+
+\section{さいごに}
+今回はofflineでVulkanとかOpenGLで立方体を回転させてみたり、変形させてみたりはしていませんが。OpenGLやvulkanではそんなこともできます。僕は楽しいからプログラミングをやっています。プログラミングはたのしいですよ？！jokenではプログラミングを学ぶことができたりします！
+
+\begin{thebibliography}{99}
+\bibitem{b_0} ''GLFW Documentation'' \\
+ http://www.glfw.org/documentation.html
+\bibitem{b_1} ''OpenGL 4.6 API Reference Guide'' \\
+ https://www.khronos.org/files/opengl46-quick-reference-card.pdf
+\end{thebibliography}
+
 
 \end{document}
+
