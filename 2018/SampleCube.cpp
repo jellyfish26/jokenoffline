@@ -36,9 +36,7 @@ static const GLdouble CubeNormal[][3] = {
 };
 
 static const GLfloat CubeMaterial[] = { 0.8f, 0.35f, 0.4f, 1.0f };
-static const GLfloat LightColor[] = { 0.2f, 0.2f, 0.8f, 1.0f };
 static const GLfloat Lightpos0[] = { 0.0f, 3.0f, 5.0f, 1.0f };
-static const GLfloat Lightpos1[] = { 5.0f, 3.0f, 0.0f, 1.0f };
 
 
 static void DrawCube()
@@ -62,11 +60,11 @@ int main()
 
 	if (glfwInit() == GL_FALSE)
 	{
-		std::cerr << "Error initilize GLFW" << std::endl;
-		exit(EXIT_FAILURE);
-		return 1;
+	std::cerr << "Error initilize GLFW" << std::endl;
+	exit(EXIT_FAILURE);
+	return 1;
 	}
-
+	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -75,7 +73,7 @@ int main()
 
 	if (window == NULL)
 	{
-		std::cerr << "Error create GLFW window." << std::endl;
+		std::cerr << "Error　create　GLFW　window." << std::endl;
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 		return 1;
@@ -85,11 +83,8 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, LightColor);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightColor);
 	// #82ffe6 is HTML color
 	glClearColor(0.509f, 1.0f, 0.901f, 1.0f);
 
@@ -107,7 +102,6 @@ int main()
 		glTranslated(0.0, 0.0, -2.0);
 		gluLookAt(3.0, 5.0, 4.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 		glLightfv(GL_LIGHT0, GL_POSITION, Lightpos0);
-		glLightfv(GL_LIGHT1, GL_POSITION, Lightpos1);
 
 		DrawCube();
 
