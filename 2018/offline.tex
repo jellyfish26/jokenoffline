@@ -1,4 +1,4 @@
-\documentclass[a4paper,titlepage]{jsarticle}
+\documentclass[a4paper,titlepage,dvipdfmx]{jsarticle}
 
 \usepackage{pxjahyper}
 \renewcommand{\kanjifamilydefault}{\gtdefault} %For Japanese text
@@ -343,7 +343,7 @@ glEnable(GL_DEPTH_TEST);
 で有効化できるのですが....デプスバッファって何？
 
 デプスバッファとはZバッファとも呼ばれますが、深度情報を用いて物体の描画処理を省略して高速化するための技術です。
-3DCGでは、平面に描画するためには空間内に配置された物体の頂点や境界線、表面のうち見えている部分だけを描画しなければなりません。手間にある他の物体などに隠されて見えてない部分の描画を省略する必要があるから有効にしています。今回は1つの物体しか描画していませんが、2つ3つ描画するときに必要なものです。
+3DCGでは、平面に描画するためには空間内に配置された物体の頂点や境界線、表面のうち見えている部分だけを描画しなければなりません。手前にある他の物体などに隠されて見えてない部分の描画を省略する必要があるから有効にしています。今回は1つの物体しか描画していませんが、2つ3つ描画するときに必要なものです。
 
 その次に、ライティング処理を有効化します。
 \begin{lstlisting}[language=C++]
@@ -426,10 +426,68 @@ glLightfv(GL_LIGHT0, GL_POSITION, Lightpos0);
 \begin{lstlisting}[language=C++]
 glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, CubeMaterial);
 \end{lstlisting}
-第1引数には質感を適用する面を指定します。(GL\verb|_|FRONT\verb|_|AND\verb|_|BACKは両面を指定しています。そして第2引数では反射光を指定します、GL\verb|_|AMBIENT\verb|_|AND\verb|_|DIFFUSEになっているので、拡散反射係数と鏡面反射係数の両方を保持しています。
+第1引数には質感を適用する面を指定します。GL\verb|_|FRONT\verb|_|AND\verb|_|BACKは両面を指定しています。そして第2引数では反射光を指定します、GL\verb|_|AMBIENT\verb|_|AND\verb|_|DIFFUSEになっているので、拡散反射係数と鏡面反射係数の両方を保持しています。
 次に描く処理を書きます。glBegin()から始まってglEnd()の間を処理します。
 その次にglNormal3dv()で法線ベクトルの設定を行います。オブジェクトが都のように光が反射するかどうかはこれによって決まります。
 最後にglVertex3dv()で配列のポインタを与えて頂点を指定します。
+forとかでソースコードの解読が困難になっていますが、可視化すると
+\begin{lstlisting}[language=bash]
+CubeNormal: { 0.0 ,0.0 ,-1.0 }
+
+-----------------------------
+CubeVertex: { 0.0 ,0.0 ,0.0 }
+CubeVertex: { 1.0 ,0.0 ,0.0 }
+CubeVertex: { 1.0 ,1.0 ,0.0 }
+CubeVertex: { 0.0 ,1.0 ,0.0 }
+-----------------------------
+
+CubeNormal: { 1.0 ,0.0 ,0.0 }
+
+-----------------------------
+CubeVertex: { 1.0 ,0.0 ,0.0 }
+CubeVertex: { 1.0 ,0.0 ,1.0 }
+CubeVertex: { 1.0 ,1.0 ,1.0 }
+CubeVertex: { 1.0 ,1.0 ,0.0 }
+-----------------------------
+
+CubeNormal: { 0.0 ,0.0 ,1.0 }
+
+-----------------------------
+CubeVertex: { 1.0 ,0.0 ,1.0 }
+CubeVertex: { 0.0 ,0.0 ,1.0 }
+CubeVertex: { 0.0 ,1.0 ,1.0 }
+CubeVertex: { 1.0 ,1.0 ,1.0 }
+-----------------------------
+
+CubeNormal: { -1.0 ,0.0 ,0.0 }
+
+-----------------------------
+CubeVertex: { 0.0 ,0.0 ,1.0 }
+CubeVertex: { 0.0 ,0.0 ,0.0 }
+CubeVertex: { 0.0 ,1.0 ,0.0 }
+CubeVertex: { 0.0 ,1.0 ,1.0 }
+-----------------------------
+
+CubeNormal: { 0.0 ,-1.0 ,0.0 }
+
+-----------------------------
+CubeVertex: { 0.0 ,0.0 ,1.0 }
+CubeVertex: { 1.0 ,0.0 ,1.0 }
+CubeVertex: { 1.0 ,0.0 ,0.0 }
+CubeVertex: { 0.0 ,0.0 ,0.0 }
+-----------------------------
+
+CubeNormal: { 0.0 ,1.0 ,0.0 }
+
+-----------------------------
+CubeVertex: { 0.0 ,1.0 ,0.0 }
+CubeVertex: { 1.0 ,1.0 ,0.0 }
+CubeVertex: { 1.0 ,1.0 ,1.0 }
+CubeVertex: { 0.0 ,1.0 ,1.0 }
+-----------------------------
+
+\end{lstlisting}
+glNormal3dv()にはCubeNormal:の後の配列を、glVertex3dv()にはCubeVertex：の後の配列を与えて頂点を指定しています。
 
 \begin{lstlisting}[language=C++]
 glfwSwapBuffers(window);
@@ -443,16 +501,28 @@ glfwWindowShouldClose(window)がTRUEになるとループが終わるため、GL
 glfwTerminate();
 return 0;
 \end{lstlisting}
-glfwTerminateはプログラムの最後に呼び出さないといけないおまじないです。そしてreturn 0;でプログラムが正常終了したことを伝えます。
+glfwTerminateはプログラムの最後に呼び出さないといけないおまじないです。そしてreturn 0;でプログラムが正常終了したことを伝えます。ちなみに今回作った図形はこちらです
+
+
+\begin{center}
+ \includegraphics[width=8cm]{SampleCube.png}
+\end{center}
 
 \section{さいごに}
 今回はofflineでVulkanとかOpenGLで立方体を回転させてみたり、変形させてみたりはしていませんが。OpenGLやvulkanではそんなこともできます。僕は楽しいからプログラミングをやっています。プログラミングはたのしいですよ？！jokenではプログラミングを学ぶことができたりします！
+(最初のような感じで書こうと思ったが...案外難しかった)
 
 \begin{thebibliography}{99}
 \bibitem{b_0} ''GLFW Documentation'' \\
- http://www.glfw.org/documentation.html
+ http://www.glfw.org/documentation.html \\
+ http://www.glfw.org/docs/latest/index.html \\
+ http://www.glfw.org/docs/latest/pages.html \\
+ http://www.glfw.org/docs/latest/modules.html
 \bibitem{b_1} ''OpenGL 4.6 API Reference Guide'' \\
  https://www.khronos.org/files/opengl46-quick-reference-card.pdf
+\bibitem{b_2} ''GLUTによる「手抜き」OpenGL入門'' \\
+ ・座標データの参考にしました。\\
+ https://tokoik.github.io/opengl/libglut.html\verb|#|8
 \end{thebibliography}
 
 
